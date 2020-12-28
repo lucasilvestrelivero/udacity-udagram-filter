@@ -1,9 +1,10 @@
 import { NextFunction } from 'connect';
 import { Request, Response } from 'express';
-import * as jwt from 'jsonwebtoken';
+
+const jwt = require('jsonwebtoken');
 
 
-const JWT_SECRET = "udagramlucasdev";
+const JWT_SECRET = process.env.JWT_SECRET;
 
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
     if (!req.headers || !req.headers.authorization){
@@ -18,7 +19,7 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
     
     const token = token_bearer[1];
 
-    return jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    return jwt.verify(token, JWT_SECRET, (err: any, decoded: any) => {
       if (err) {
         return res.status(500).send({ auth: false, message: 'Failed to authenticate.' });
       }

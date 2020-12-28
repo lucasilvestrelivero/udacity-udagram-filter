@@ -4,7 +4,7 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
 import { requireAuth } from './auth';
 import fs from 'fs';
 
-import cors from 'cors';
+const cors = require('cors');
 
 (async () => {
 
@@ -39,7 +39,7 @@ import cors from 'cors';
 
   //! END @TODO1
 
-  app.get('/filteredimage', async (req: Request, res: Response) => {
+  app.get('/filteredimage', requireAuth, async (req: Request, res: Response) => {
     let image_url: string = req.query.image_url ? req.query.image_url : "";
     if (!image_url) {
       return res.status(400).send(`image_url is required. example: /filteredimage?image_url=<value>`);
