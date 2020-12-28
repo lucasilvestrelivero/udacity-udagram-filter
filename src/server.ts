@@ -1,6 +1,10 @@
 import express, {Request, Response} from 'express';
 import bodyParser from 'body-parser';
 import {filterImageFromURL, deleteLocalFiles} from './util/util';
+import { requireAuth } from './auth';
+import fs from 'fs';
+
+import cors from 'cors';
 
 (async () => {
 
@@ -12,6 +16,10 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   
   // Use the body parser middleware for post requests
   app.use(bodyParser.json());
+
+  app.use(cors({
+    origin: '*'
+  }));
 
   // @TODO1 IMPLEMENT A RESTFUL ENDPOINT
   // GET /filteredimage?image_url={{URL}}
@@ -38,12 +46,16 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
     }
 
     let image_path: string = await filterImageFromURL(image_url)
-
+    
     if (!image_path) {
       return res.status(422).send(`Invalid image_url`);
     }
   
-    res.sendFile(image_path);
+    res.sendFile(image_path, () => {
+      const files = fs.readdirSync('./src/util/tmp/');
+      deleteLocalFiles(files);
+    });
+    
   });
   
   // Root Endpoint
